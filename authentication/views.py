@@ -8,18 +8,34 @@ from rest_framework.authentication import TokenAuthentication
 from .serializers import UserSerializer, RegisterSerializer
 from .models import User
 
-class RegisterView(APIView):
-    permission_classes = [AllowAny]
+class CustomerRegisterView(APIView):
+    permission_classes = [AllowAny]  
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
+        
         if serializer.is_valid():
             user = serializer.save()
+            user.is_customer=True
+            user.save()
+            user_data = UserSerializer(user).data
+            return Response(user_data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class ServiceRegisterView(APIView):
+    permission_classes = [AllowAny]  
+    def post(self, request):
+        serializer = RegisterSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            user = serializer.save()
+            user.is_service=True
+            user.save()
             user_data = UserSerializer(user).data
             return Response(user_data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class LoginView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [AllowAny]  
 
     def post(self, request):
         username = request.data.get('username')
