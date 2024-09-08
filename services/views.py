@@ -4,6 +4,7 @@ from rest_framework import status
 from .models import ServiceType, Service
 from .serializers import ServiceTypeSerializer, ServiceSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from .document import ServiceDocument
 
 class GetAllowAnyPostIsAuthenticated(AllowAny):
     def has_permission(self, request, view):
@@ -140,3 +141,14 @@ class ServiceDetailView(APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Service.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
+        
+
+class ServiceSearchView(APIView):
+    def get(self, request):
+        query = request.query_params.get('q', None)
+        if query:
+            search_results = ServiceDocument.search().query("multi_match", query=query, fields=['title', 'description'])
+            services = [result.to_dict() for result in search_results]
+            return Response(services, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "No search query provided."}, status=status.HTTP_400_BAD_REQUEST)

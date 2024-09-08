@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'oauth2_provider',
     'authentication',
     'services',
-    'cart'
+    'cart',
+    'django_elasticsearch_dsl',
 ]
 
 MIDDLEWARE = [
@@ -154,4 +155,10 @@ AUTH_USER_MODEL = 'authentication.User'
 OAUTH2_PROVIDER = {
     'ACCESS_TOKEN_EXPIRE_SECONDS': 36000, 
     'SCOPES': {'read': 'Read scope', 'write': 'Write scope'},
+}
+
+ELASTICSEARCH_DSL = {
+    'default': {
+        'hosts': 'http://localhost:9200',
+    },
 }
