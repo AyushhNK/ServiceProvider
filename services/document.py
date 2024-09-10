@@ -1,29 +1,33 @@
 from django_elasticsearch_dsl import Document, fields
 from django_elasticsearch_dsl.registries import registry
-from .models import Service
+from .models import Business
 
 @registry.register_document
-class ServiceDocument(Document):
+class BusinessDocument(Document):
     class Index:
         # Name of the Elasticsearch index
-        name = 'services'
+        name = 'businesses'
 
     class Django:
-        model = Service  # The model associated with this Document
+        model = Business  # The model associated with this Document
 
         fields = [
-            'title',
+            'name',
             'description',
-            'price',
-            'discount',
+            'address',
+            'phone_number',
+            'website',
+            'email',
+            'created_at',
+            'updated_at',
         ]
 
-    # Add a field for the seller if needed
-    seller = fields.ObjectField(properties={
-        'id': fields.IntegerField(),
-        'username': fields.TextField(),
-    })
+    # Add a field for the owner if needed
+    # owner = fields.ObjectField(properties={
+    #     'id': fields.IntegerField(),
+    #     'username': fields.TextField(),
+    # })
 
     def get_queryset(self):
         """Override the default queryset to include related fields."""
-        return super().get_queryset().select_related('seller')
+        return super().get_queryset().select_related('owner')

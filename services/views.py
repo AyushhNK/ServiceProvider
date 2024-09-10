@@ -1,10 +1,10 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import ServiceType, Service
-from .serializers import ServiceTypeSerializer, ServiceSerializer
+from .models import Category, Business
+from .serializers import CategorySerializer, BusinessSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from .document import ServiceDocument
+# from .document import BusinessDocument
 
 class GetAllowAnyPostIsAuthenticated(AllowAny):
     def has_permission(self, request, view):
@@ -12,143 +12,143 @@ class GetAllowAnyPostIsAuthenticated(AllowAny):
             return IsAuthenticated().has_permission(request, view)
         return True
 
-class ServiceTypeListCreateView(APIView):
+class CategoryListCreateView(APIView):
     permission_classes = [GetAllowAnyPostIsAuthenticated]
 
     def get(self, request):
-        service_types = ServiceType.objects.all()
-        serializer = ServiceTypeSerializer(service_types, many=True)
+        categories = Category.objects.all()
+        serializer = CategorySerializer(categories, many=True)
         return Response(serializer.data)
 
     def post(self, request):
         if request.user.is_service:
-            serializer = ServiceTypeSerializer(data=request.data)
+            serializer = CategorySerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        return Response({"error": "Customer does not have permission to add servicetype"}, status=status.HTTP_403_FORBIDDEN)
+        return Response({"error": "User does not have permission to add category"}, status=status.HTTP_403_FORBIDDEN)
 
-class ServiceTypeDetailView(APIView):
+class CategoryDetailView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, pk):
         try:
-            service_type = ServiceType.objects.get(pk=pk)
-            serializer = ServiceTypeSerializer(service_type)
+            category = Category.objects.get(pk=pk)
+            serializer = CategorySerializer(category)
             return Response(serializer.data)
-        except ServiceType.DoesNotExist:
+        except Category.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
     def put(self, request, pk):
         try:
-            service_type = ServiceType.objects.get(pk=pk)
-            serializer = ServiceTypeSerializer(service_type, data=request.data)
+            category = Category.objects.get(pk=pk)
+            serializer = CategorySerializer(category, data=request.data)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        except ServiceType.DoesNotExist:
+        except Category.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
     def delete(self, request, pk):
         try:
-            service_type = ServiceType.objects.get(pk=pk)
-            service_type.delete()
+            category = Category.objects.get(pk=pk)
+            category.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
-        except ServiceType.DoesNotExist:
+        except Category.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
 
-class ServiceListCreateView(APIView):
+class BusinessListCreateView(APIView):
     permission_classes = [GetAllowAnyPostIsAuthenticated]
 
     def get(self, request, *args, **kwargs):
         query = request.query_params.get('query', None)
-        processed_services = []
+        processed_businesses = []
 
         if query == 'lowtohigh':
-            services = Service.objects.all().order_by('price')
-            for service in services:
-                discounted_price = service.price - (2 / 100 * service.price)
-                service_data = {
-                    'id': service.id,
-                    'type': service.type.id,
-                    'title': service.title,
-                    'description': service.description,
+            businesses = Business.objects.all().order_by('price')
+            for business in businesses:
+                discounted_price = business.price - (2 / 100 * business.price)
+                business_data = {
+                    'id': business.id,
+                    'type': business.type.id,
+                    'name': business.name,
+                    'description': business.description,
                     'price': discounted_price,
-                    'discount': service.discount,
+                    'discount': business.discount,
                 }
-                processed_services.append(service_data)
-            return Response(processed_services)
+                processed_businesses.append(business_data)
+            return Response(processed_businesses)
 
         elif query == 'hightolow':
-            services = Service.objects.all().order_by('-price')
-            for service in services:
-                surcharge_price = service.price + (2 / 100 * service.price)
-                service_data = {
-                    'id': service.id,
-                    'type': service.type.id,
-                    'title': service.title,
-                    'description': service.description,
+            businesses = Business.objects.all().order_by('-price')
+            for business in businesses:
+                surcharge_price = business.price + (2 / 100 * business.price)
+                business_data = {
+                    'id': business.id,
+                    'type': business.type.id,
+                    'name': business.name,
+                    'description': business.description,
                     'price': surcharge_price,
-                    'discount': service.discount,
+                    'discount': business.discount,
                 }
-                processed_services.append(service_data)
-            return Response(processed_services)
+                processed_businesses.append(business_data)
+            return Response(processed_businesses)
 
         else:
-            services = Service.objects.all()
-            serializer = ServiceSerializer(services, many=True)
+            businesses = Business.objects.all()
+            serializer = BusinessSerializer(businesses, many=True)
             return Response(serializer.data)
 
     def post(self, request):
         if request.user.is_service:
-            serializer = ServiceSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.save(seller=request.user)
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        return Response({"error": "Customer does not have permission to add service"}, status=status.HTTP_403_FORBIDDEN)
-
-
-class ServiceDetailView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request, pk):
-        try:
-            service = Service.objects.get(pk=pk)
-            serializer = ServiceSerializer(service)
-            return Response(serializer.data)
-        except Service.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-    def put(self, request, pk):
-        try:
-            service = Service.objects.get(pk=pk)
-            serializer = ServiceSerializer(service, data=request.data)
+            serializer = BusinessSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save()
-                return Response(serializer.data)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        except Service.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response({"error": "User does not have permission to add business"}, status=status.HTTP_403_FORBIDDEN)
 
-    def delete(self, request, pk):
-        try:
-            service = Service.objects.get(pk=pk)
-            service.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        except Service.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+
+# class BusinessDetailView(APIView):
+#     permission_classes = [IsAuthenticated]
+
+#     def get(self, request, pk):
+#         try:
+#             business = Business.objects.get(pk=pk)
+#             serializer = BusinessSerializer(business)
+#             return Response(serializer.data)
+#         except Business.DoesNotExist:
+#             return Response(status=status.HTTP_404_NOT_FOUND)
+
+#     def put(self, request, pk):
+#         try:
+#             business = Business.objects.get(pk=pk)
+#             serializer = BusinessSerializer(business, data=request.data)
+#             if serializer.is_valid():
+#                 serializer.save()
+#                 return Response(serializer.data)
+#             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#         except Business.DoesNotExist:
+#             return Response(status=status.HTTP_404_NOT_FOUND)
+
+#     def delete(self, request, pk):
+#         try:
+#             business = Business.objects.get(pk=pk)
+#             business.delete()
+#             return Response(status=status.HTTP_204_NO_CONTENT)
+#         except Business.DoesNotExist:
+#             return Response(status=status.HTTP_404_NOT_FOUND)
         
 
-class ServiceSearchView(APIView):
-    def get(self, request):
-        query = request.query_params.get('q', None)
-        if query:
-            search_results = ServiceDocument.search().query("multi_match", query=query, fields=['title', 'description'])
-            services = [result.to_dict() for result in search_results]
-            return Response(services, status=status.HTTP_200_OK)
-        else:
-            return Response({"error": "No search query provided."}, status=status.HTTP_400_BAD_REQUEST)
+# class BusinessSearchView(APIView):
+#     def get(self, request):
+#         query = request.query_params.get('q', None)
+#         if query:
+#             search_results = BusinessDocument.search().query("multi_match", query=query, fields=['name', 'description'])
+#             businesses = [result.to_dict() for result in search_results]
+#             return Response(businesses, status=status.HTTP_200_OK)
+#         else:
+#             return Response({"error": "No search query provided."}, status=status.HTTP_400_BAD_REQUEST)

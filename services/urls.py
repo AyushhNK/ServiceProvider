@@ -1,17 +1,16 @@
 from django.urls import path
 from .views import (
-    ServiceTypeListCreateView,
-    ServiceTypeDetailView,
-    ServiceListCreateView,
-    ServiceDetailView,
-    ServiceSearchView
+    CategoryListCreateView,
+    CategoryDetailView,
+    BusinessListCreateView,
+    # BusinessDetailView,
+    # BusinessSearchView
 )
 
 urlpatterns = [
-    path('service-types/', ServiceTypeListCreateView.as_view(), name='service-type-list-create'),
-    path('service-types/<int:pk>/', ServiceTypeDetailView.as_view(), name='service-type-detail'),
-    path('services/', ServiceListCreateView.as_view(), name='service-list-create'),
-    path('services/<int:pk>/', ServiceDetailView.as_view(), name='service-detail'),
-    path('search/', ServiceSearchView.as_view(), name='service-search'),
+    path('categories/', CategoryListCreateView.as_view(), name='category-list-create'),
+    path('categories/<int:pk>/', CategoryDetailView.as_view(), name='category-detail'),
+    path('businesses/', BusinessListCreateView.as_view(), name='business-list-create'),
+    # path('businesses/<int:pk>/', BusinessDetailView.as_view(), name='business-detail'),
+    # path('search/', BusinessSearchView.as_view(), name='business-search'),
 ]
-

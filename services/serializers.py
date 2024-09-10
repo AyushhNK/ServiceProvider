@@ -1,12 +1,27 @@
 from rest_framework import serializers
-from .models import ServiceType, Service
+from .models import Category, Business
 
-class ServiceTypeSerializer(serializers.ModelSerializer):
+class CategorySerializer(serializers.ModelSerializer):
     class Meta:
-        model = ServiceType
-        fields = '__all__'
+        model = Category
+        fields = ['id', 'name'] 
 
-class ServiceSerializer(serializers.ModelSerializer):
+class BusinessSerializer(serializers.ModelSerializer):
+    category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
+    created_at = serializers.DateTimeField(read_only=True)
+    updated_at = serializers.DateTimeField(read_only=True)
+
     class Meta:
-        model = Service
-        fields = ['type','title','description','price','discount']
+        model = Business
+        fields = [
+            'id', 
+            'name',
+            'description',
+            'category',
+            'address',
+            'phone_number',
+            'website',
+            'email',
+            'created_at',
+            'updated_at',
+        ]
