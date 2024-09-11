@@ -111,6 +111,27 @@ class BusinessListCreateView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response({"error": "User does not have permission to add business"}, status=status.HTTP_403_FORBIDDEN)
 
+from django.conf import settings
+class SearchByAddressOrCategoryView(APIView):
+    def get(self, request):
+        category = request.GET.get('category', None)
+        address = request.GET.get('address', None)
+        filters = {}
+        if category:
+            try:
+                category_id = Category.objects.get(name=category).id
+                filters['category'] = category_id
+                print(settings.BASE_DIR)
+            except Category.DoesNotExist:
+                return Response({"error": "Category not found"}, status=404)
+        if address:
+            filters['address__icontains'] = address
+            print(filters)
+        businesses = Business.objects.filter(**filters)
+        serializer = BusinessSerializer(businesses, many=True)
+        return Response(serializer.data)
+
+
 
 # class BusinessDetailView(APIView):
 #     permission_classes = [IsAuthenticated]

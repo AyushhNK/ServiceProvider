@@ -19,6 +19,7 @@ class BusinessSerializer(serializers.ModelSerializer):
             'description',
             'category',
             'address',
+            'image',
             'phone_number',
             'website',
             'email',
