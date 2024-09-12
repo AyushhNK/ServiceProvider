@@ -162,7 +162,11 @@ OAUTH2_PROVIDER = {
 #     },
 # }
 
+import environ
+env = environ.Env()
+environ.Env.read_env()
 
+OPENWEATHER_API_KEY = env('OPENWEATHER_API_KEY')
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'

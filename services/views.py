@@ -4,6 +4,8 @@ from rest_framework import status
 from .models import Category, Business
 from .serializers import CategorySerializer, BusinessSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from django.conf import settings
+from .utils import get_city_name
 # from .document import BusinessDocument
 
 class GetAllowAnyPostIsAuthenticated(AllowAny):
@@ -111,17 +113,22 @@ class BusinessListCreateView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response({"error": "User does not have permission to add business"}, status=status.HTTP_403_FORBIDDEN)
 
-from django.conf import settings
 class SearchByAddressOrCategoryView(APIView):
     def get(self, request):
         category = request.GET.get('category', None)
-        address = request.GET.get('address', None)
+        print(request.data)
+
+        if request.data:
+            latitude = request.data.get('latitude', None)
+            longitude = request.data.get('longitude', None)
+            address=get_city_name(latitude, longitude, settings.OPENWEATHER_API_KEY)
+        else:
+            address = request.GET.get('address', 'kathmandu')
         filters = {}
         if category:
             try:
                 category_id = Category.objects.get(name=category).id
                 filters['category'] = category_id
-                print(settings.BASE_DIR)
             except Category.DoesNotExist:
                 return Response({"error": "Category not found"}, status=404)
         if address:
