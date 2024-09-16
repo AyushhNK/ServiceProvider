@@ -7,6 +7,8 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.conf import settings
 from .utils import get_city_name
 # from .document import BusinessDocument
+from rest_framework.pagination import PageNumberPagination
+
 
 class GetAllowAnyPostIsAuthenticated(AllowAny):
     def has_permission(self, request, view):
@@ -66,6 +68,7 @@ class BusinessListCreateView(APIView):
     permission_classes = [GetAllowAnyPostIsAuthenticated]
 
     def get(self, request, *args, **kwargs):
+        
         query = request.query_params.get('query', None)
         processed_businesses = []
 
@@ -135,8 +138,11 @@ class SearchByAddressOrCategoryView(APIView):
             filters['address__icontains'] = address
             print(filters)
         businesses = Business.objects.filter(**filters)
-        serializer = BusinessSerializer(businesses, many=True)
-        return Response(serializer.data)
+        paginator=PageNumberPagination()
+        paginator.page_size=10
+        paginated_queryset = paginator.paginate_queryset(businesses, request)
+        serializer = BusinessSerializer(paginated_queryset, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
 
 

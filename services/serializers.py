@@ -4,7 +4,7 @@ from .models import Category, Business
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ['id', 'name'] 
+        fields = ['id', 'name','image'] 
 
 class BusinessSerializer(serializers.ModelSerializer):
     category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())

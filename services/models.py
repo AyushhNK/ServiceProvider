@@ -8,6 +8,7 @@ User=get_user_model()
 
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
+    image = models.ImageField(upload_to='business_images/', default='business_images/default.png')
 
     def __str__(self):
         return self.name
