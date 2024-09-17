@@ -9,6 +9,9 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
+import environ
+env = environ.Env()
+environ.Env.read_env()
 
 from pathlib import Path
 
@@ -107,8 +110,12 @@ WSGI_APPLICATION = 'serviceprovider.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': env('DATABASE_NAME'),       
+        'USER': env('DATABASE_USER'), 
+        'PASSWORD': env('DATABASE_PASSWORD'), 
+        'HOST': env('DATABASE_HOST'),     
+        'PORT': env('DATABASE_PORT'),          
     }
 }
 
@@ -184,9 +191,7 @@ OAUTH2_PROVIDER = {
 #     },
 # }
 
-import environ
-env = environ.Env()
-environ.Env.read_env()
+
 
 OPENWEATHER_API_KEY = env('OPENWEATHER_API_KEY')
 
