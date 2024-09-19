@@ -186,3 +186,52 @@ class SearchByAddressOrCategoryView(APIView):
 #             return Response(businesses, status=status.HTTP_200_OK)
 #         else:
 #             return Response({"error": "No search query provided."}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ReviewAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, business_id):
+        """List all reviews for a specific business."""
+        business = get_object_or_404(Business, id=business_id)
+        reviews = business.reviews.all()
+        serializer = ReviewSerializer(reviews, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, business_id):
+        """Create a new review for a specific business."""
+        business = get_object_or_404(Business, id=business_id)
+        serializer = ReviewSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            serializer.save(user=request.user, business=business)  # Set user and business automatically
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, review_id):
+        """Update an existing review."""
+        review = get_object_or_404(Review, id=review_id)
+
+        # Check if the user is the owner of the review
+        if review.user != request.user:
+            return Response({'detail': 'You do not have permission to edit this review.'}, status=status.HTTP_403_FORBIDDEN)
+
+        serializer = ReviewSerializer(review, data=request.data)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, review_id):
+        """Delete an existing review."""
+        review = get_object_or_404(Review, id=review_id)
+
+        # Check if the user is the owner of the review
+        if review.user != request.user:
+            return Response({'detail': 'You do not have permission to delete this review.'}, status=status.HTTP_403_FORBIDDEN)
+
+        review.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
