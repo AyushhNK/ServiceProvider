@@ -108,17 +108,23 @@ WSGI_APPLICATION = 'serviceprovider.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': env('DATABASE_NAME'),       
+#         'USER': env('DATABASE_USER'), 
+#         'PASSWORD': env('DATABASE_PASSWORD'), 
+#         'HOST': env('DATABASE_HOST'),     
+#         'PORT': env('DATABASE_PORT'),          
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': env('DATABASE_NAME'),       
-        'USER': env('DATABASE_USER'), 
-        'PASSWORD': env('DATABASE_PASSWORD'), 
-        'HOST': env('DATABASE_HOST'),     
-        'PORT': env('DATABASE_PORT'),          
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -154,7 +160,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+Static_Root ='/static'
+STATIC_URL = '/static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
