@@ -1,0 +1,19 @@
+name: my-docker-project 
+
+services:
+  web:
+    image: my-docker-image
+    container_name: my-docker-container
+    ports:
+      - "8001:8000"
+    depends_on:
+      - db
+  db:
+    image: postgres
+    container_name: my-postgres-container
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: Serviceprovider
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
