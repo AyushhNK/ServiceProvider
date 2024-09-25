@@ -213,7 +213,7 @@ class ReviewAPIView(APIView):
         """Update an existing review."""
         review = get_object_or_404(Review, id=review_id)
 
-        # Check if the user is the owner of the review
+        # Checking if the user is the owner of the review
         if review.user != request.user:
             return Response({'detail': 'You do not have permission to edit this review.'}, status=status.HTTP_403_FORBIDDEN)
 
@@ -229,7 +229,7 @@ class ReviewAPIView(APIView):
         """Delete an existing review."""
         review = get_object_or_404(Review, id=review_id)
 
-        # Check if the user is the owner of the review
+        # Checking if the user is the owner of the review
         if review.user != request.user:
             return Response({'detail': 'You do not have permission to delete this review.'}, status=status.HTTP_403_FORBIDDEN)
 
