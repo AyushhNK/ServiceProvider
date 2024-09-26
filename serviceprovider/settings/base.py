@@ -51,9 +51,10 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'social_auth',
     'social_django',
+    'drf_yasg',
     # 'django_elasticsearch_dsl',
 ]
-
+# 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'social_core.backends.google.GoogleOAuth2',  # Google OAuth2 backend
@@ -189,7 +190,16 @@ OAUTH2_PROVIDER = {
 #     },
 # }
 
-
+# SWAGGER_SETTINGS = {
+#     'SECURITY_DEFINITIONS': {
+#         'Bearer': {
+#             'type': 'apiKey',
+#             'name': 'Authorization',
+#             'in': 'header'
+#         }
+#     },
+#     'USE_SESSION_AUTH': False,
+# }
 
 OPENWEATHER_API_KEY = env('OPENWEATHER_API_KEY')
 

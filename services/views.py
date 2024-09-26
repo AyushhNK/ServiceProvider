@@ -8,6 +8,10 @@ from django.conf import settings
 from .utils import get_city_name
 # from .document import BusinessDocument
 from rest_framework.pagination import PageNumberPagination
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+
+
 
 
 class GetAllowAnyPostIsAuthenticated(AllowAny):
@@ -20,6 +24,7 @@ class CategoryListCreateView(APIView):
     permission_classes = [GetAllowAnyPostIsAuthenticated]
 
     def get(self, request):
+        """List all categories"""
         categories = Category.objects.all()
         serializer = CategorySerializer(categories, many=True)
         return Response(serializer.data)
